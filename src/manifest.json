@@ -1,9 +1,9 @@
 {
  "lang": "en",
  "dir": "ltr",
- "name": "Learn Angular2",
+ "name": "UIDeve",
  "description": "A Developer guide!",
- "short_name": "Angular2",
+ "short_name": "UIDeve",
  "icons": [
   {
    "src": "\/android-icon-96x96.png",
@@ -18,7 +18,7 @@
    "density": "4.0"
   }
  ],
- "start_url": "https://learn-angular2.com",
+ "start_url": "https://uideve.herokuapp.com",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#2d2d30",

@@ -32,11 +32,11 @@ export const routes: Routes = [
 		component: HomeComponent,
 		data: {
 			meta: {
-				title: 'Learn-Angular2 Home',
-				description: 'Learn-angular2 Provides the solutions of many problems that we face during the development of angular2 applications. Here I will tell you about angular2 services, loggers, components and many more...'
+				title: 'UIDeve Home',
+				description: 'UIDeve Provides the solutions of many problems that we face during the development of angular2 applications. Here I will tell you about angular2 services, loggers, components and many more...'
 			},
 			post_tags: [],
-			post_title: 'Learn-Angular2 Home',
+			post_title: 'UIDeve Home',
 			post_description: '',
 			post_image_url: '',
 			show_in_related_post: 'false'
@@ -47,11 +47,11 @@ export const routes: Routes = [
 		component: ContactComponent,
 		data: {
 			meta: {
-				title: 'Learn-Angular2 Contact',
+				title: 'UIDeve Contact',
 				description: 'If you find any error, issues or want to send any suggestion. You can Contact me. Please fill you details.'
 			},
 			post_tags: ['Contact', 'Abhishek Jha'],
-			post_title: 'Learn-Angular2 Contact',
+			post_title: 'UIDeve Contact',
 			post_description: '',
 			post_image_url: '',
 			show_in_related_post: 'false'

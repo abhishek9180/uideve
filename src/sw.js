@@ -1,6 +1,6 @@
 
 
-var CACHE_NAME = 'learn-angular2-cache-v1';
+var CACHE_NAME = 'UIDeve-cache-v1';
 var urlsToCache = [
   '/',
   '/index.html',
