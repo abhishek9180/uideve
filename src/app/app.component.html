@@ -1,0 +1,36 @@
+<nav class="navbar navbar-default animate-menu-top" [ngClass]="{'navbar-fixed-top': isDesktop, 'animate-menu': animateMenu}">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <!-- <div class="user-login-header visibl" #googleLoginButton>
+          <span [hidden]="loginService.profile?.id" class="googleUserImage"><i class="glyphicon glyphicon-lock"></i><span class="hidden-xs">SignIn</span></span>  
+          <span [hidden]="!loginService.profile?.id" #googleLogoutButton class="googleUserImage"><img *ngIf="loginService.profile?.imageUrl" class="img-circle" [src]="loginService.profile?.imageUrl"></span>                          
+      </div> -->
+      <a class="navbar-brand" routerLink="/home" (click)="setActiveMenu('HOME')">Learn Angular</a>
+    </div>
+    <div class="" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li [class.active]="activeMenu==='HOME'" class="hidden-xs" (click)="setActiveMenu('HOME')"><a routerLink="/home">HOME</a></li>
+        <li [class.active]="activeMenu==='GUIDE'" class="hidden-xs" (click)="setActiveMenu('GUIDE')"><a routerLink="/guide">GUIDE</a></li>
+        <li [class.active]="activeMenu==='QUIZ'" class="hidden-xs" (click)="setActiveMenu('QUIZ')"><a routerLink="/quiz">QUIZ</a></li>
+        <li [class.active]="activeMenu==='CONTACT'" class="hidden-xs" (click)="setActiveMenu('CONTACT')"><a routerLink="/contact">CONTACT</a></li>
+        <li [hidden]="profile?.id" #googleLoginButton class="googleUserImage"><a><i class="glyphicon glyphicon-lock"></i><span class="hidden-xs">SignIn</span></a></li>
+        <li [hidden]="!profile?.id" #googleLogoutButton class="googleUserImage"><img *ngIf="loginService.profile?.imageUrl" class="img-circle" [src]="profile?.imageUrl"></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- page content -->
+<div class="container add-top-margin">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- bottom menu mobile -->
+<nav class="navbar animate-menu-bottom" [ngClass]="{'animate-menu': animateMenu}">
+  <div class="container-fluid">
+    <div class="col-xs-3" [class.active]="activeMenu==='HOME'" (click)="setActiveMenu('HOME')"><a routerLink="/home" class="glyphicon glyphicon-home"></a></div>
+    <div class="col-xs-3" [class.active]="activeMenu==='GUIDE'" (click)="setActiveMenu('GUIDE')"><a routerLink="/guide" class="glyphicon glyphicon-list-alt"></a></div>
+    <div class="col-xs-3" [class.active]="activeMenu==='QUIZ'" (click)="setActiveMenu('QUIZ')"><a routerLink="/quiz" class="glyphicon glyphicon-check"></a></div>
+    <div class="col-xs-3" [class.active]="activeMenu==='CONTACT'" (click)="setActiveMenu('CONTACT')"><a routerLink="/contact" class="glyphicon glyphicon-user"></a></div>
+  </div>
+</nav>

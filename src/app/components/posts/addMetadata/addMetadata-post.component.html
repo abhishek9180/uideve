@@ -1,0 +1,249 @@
+<div class="row  page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+        <h3 class="text-center">Adding different Title, meta description and other meta info to different pages in Angular2</h3>
+        <hr>
+        <p>Adding
+            <b>Title, meta description and other meta Info</b> to your webApp is the important inital step for SEO optimization.
+            If you ignore these info in your web app then your webApp might not appear at the top in search results. In traditional
+            HTML page we can add those details in every pages but in case of angular2 there is no such direct approach. So,
+            lets see how we can do this.</p>
+        <hr>
+        <p>In this tutorial, I am going to use
+            <a href="https://github.com/vinaygopinath/ng2-meta" title="ng2-meta" target="_blank">ng2-meta</a> which will update HTML meta tags for title, description and others automatically based on the route
+            in your Angular2 app. </p>
+
+        <p>Create a file named <code>meta.service.ts</code> and add the below code there.</p>
+<pre><code highlight class="typescript">
+import &#123; Inject, Injectable,Optional &#125; from '@angular/core';
+import &#123; Title, DOCUMENT &#125; from '@angular/platform-browser'
+import &#123; Router, NavigationEnd Event as NavigationEnd, ActivatedRoute &#125; from '@angular/router';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/map';
+import &#123; META_CONFIG &#125; from './meta.module';
+import &#123; MetaConfig &#125; from './meta-config';
+
+const isDefined = (val: any) =&gt; typeof val !== 'undefined';
+                        
+@Injectable()
+export class MetaService &#123;
+    constructor(private router: Router, @Inject(DOCUMENT) private document: any, private titleService: Title, private activatedRoute: ActivatedRoute, @Inject(META_CONFIG) private MetaConfig: MetaConfig) &#123;
+        this.router.events
+            .filter(event =&gt; (event instanceof NavigationEnd))
+            .map(() =&gt; this._findLastChild(this.activatedRoute))
+            .subscribe((routeData: any) =&gt; &#123;
+                this._updateMetaTages(routeData.meta);
+            &#125;)
+        &#125;
+                        
+    private _findLastChild(activatedRoute: ActivatedRoute) &#123;
+        const snapshot = activatedRoute.snapshot;
+        let child = snapshot.firstChild;
+        while(child.firstChild !== null) &#123;
+            child = child.firstChild;
+        &#125;
+        return child.Data;
+    &#125;
+                        
+    private _getOrCreateMetaTag(name: string): HTMLElement &#123;
+        let e1: HTMLElement = this.document.querySelector(`meta`);
+        if(!e1) &#123;
+            e1 = this.document.createElement(meta);
+            e1.setAttribute('name', name);
+            this.document.head.appendChild(e1);
+        &#125;
+        return e1;
+    &#125;
+                        
+    private _updateMetaTages(meta: any = &#123;&#125;) &#123;
+        if(meta.disableUpdate) &#123;
+            return false;
+        &#125;
+        this.setTitle(meta.title, meta.titleSuffix);
+        Object.keys(this.metaConfig.defaults).forEach(key =&gt; &#123;
+            if(key === 'title' || key === 'titleSuffix') &#123;
+                return;
+            &#125;
+            this.setTag(key, meta[key]);
+        &#125;);
+        Object.keys(this.metaConfig.defaults).forEach(key =&gt; &#123;
+            if(key in meta || key === 'title' || key === 'titleSuffix') &#123;
+                return;
+            &#125;
+            this.setTag(key, this.metaConfig.defaults[key]);
+        &#125;);
+    &#125;
+                        
+    setTitle(title?: string, titleSuffix?: string): MetaService &#123;
+        const titleElement = this._getOrCreateMetaTag('title');
+        const ogTitleElement = this._getOrCreateMetaTag('og:title');
+        let titleStr = isDefined(title) ? title : (this.metaConfig.defaults['title'] || '');
+        if(this.metaConfig.useTitleSuffix) &#123;
+            titleStr += isDefined(titleSuffix) ? titleSuffix : (this.metaConfig.defaults['titleSuffix'] || '');
+        &#125;
+        titleElement.setAttribute('content', titleStr);
+        ogTitleElement.setAttribute('content', titleStr);
+        this.titleService.setTitle(titleStr);
+        return this;
+    &#125;
+                        
+    setTag(tag: string, value: string): MetaService &#123;
+        if(tag === 'title' || tag === 'titleSuffix') &#123;
+            throw new Error(`Attemp to set $&#123;tag&#125; throw 'setTag': 'title' and 'titleSuffix' are reserved tag names. Please use 'MetaService.setTitle' instead`);
+        &#125;
+        const tagElement = this._getOrCreateMetaTag(tag);
+        let tagStr = isDefined(value) ? value : (this.metaConfig.defaults[tag] || '');
+        tagElement.setAttribute('content', tagStr);
+        if(tag === 'description') &#123;
+            let ogDescElement = this._getOrCreateMetaTag('og:description');
+            ogDescElement.setAttribute('content', tagStr);
+        &#125;
+        return this;
+    &#125;
+&#125;
+</code></pre>
+
+        <p>Here,
+            <code>meta.service.ts</code> file contains different methods like
+            <code>_getOrCreateMetaTag(name: string), _updateMetaTages(meta: any = &#123;&#125;), setTitle(title?: string, titleSuffix?: string) and setTag(tag: string, value: string)</code> for creating, updating and setting the meta tag.</p>
+        <p>Now, create a file <code>meta.module.ts</code><p>
+<pre><code highlight class="typescript">
+import &#123; OpaqueToken, NgModule, ModuleWithProviders &#125; from '@angular/core';
+import &#123; RouterModule &#125; from '@angular/router';
+import &#123; MetaConfig &#125; from './meta-config';
+import &#123; MetaService &#125; from './meta.service';
+                        
+export const META_CONFIG = new OpaqueToken('meta config');
+                        
+@NgModule(&#123;
+    imports: [ RouterModule ]
+&#125;)
+                        
+export class MetaModule &#123;
+    static forRoot(metaConfig: MetaConfig = &#123; userTitleSuffix: false, defaults: &#123;&#125; &#125;): ModuleWithProviders
+        return &#123;
+            ngModule: MetaModule,
+            providers: [&#123;provide: META_CONFIG, useValue: metaConfig &#125;, MetaService]
+        &#125;;
+    &#125;
+&#125;
+</code></pre>
+
+            <p>Now, create a file <code>meta-config.ts</code></p>
+<pre><code highlight class="typescript">
+export interface MetaConfig &#123;
+    /**
+    * Flag to append an optional title suffix to the title.
+    * Default value: false
+    */
+    useTitleSuffix?: boolean;
+    /**
+    * A dictionary of default meta tags and their values
+    */
+    defaults?: &#123;
+        /**
+        * The default title, used when a route does not have its own titleSuffix.
+        */
+        title?: string;
+        /**
+        * The default titleSuffix, used when useTitleSuffix is set to true
+        * and a route does not have its own titleSuffix.
+        */
+        titleSuffix?: string;
+        [key: string]: string;
+    &#125;
+&#125;
+</code></pre>
+                <p>Now, import <code>MetaModule</code> to <code>app.module.ts</code>. Since, We'll use the this module throughout the application. Provide the MetaModule inside imports
+                as <code>MetaModule.forRoot()</code>.</p>
+<pre><code highlight class="typescript">
+import &#123; NgModule &#125; from '@angular/core';
+import &#123; BrowserModule &#125; from '@angular/platform-browser';
+import &#123; RouterModule, Routes &#125; from '@angular/router';
+import &#123; AppComponent &#125; from './app.component';
+import &#123; AnotherComponent &#125; from './another.component';
+import &#123; routes &#125; from './app.router';
+import &#123; MetaModule &#125; from './meta.module';
+        
+@NgModule (&#123;
+    imports: [ BrowserModule, RouterModule.forRoot(routes), MetaModule.forRoot() ],
+    declarations: [ AppComponent, AnotherComponent ],
+    bootstrap: [ AppComponent ],
+&#125;)
+        
+export class AppModule &#123; &#125;       
+</code></pre>
+
+            <p>Now, inside <code>router.service.ts</code> file provide the meta information like title, description etc as given below.</p>
+<pre><code highlight class="typescript">
+import &#123; NgModule &#125; from '@angular/core';
+import &#123; RouterModule, Routes &#125; from '@angular/router';
+import &#123; AppComponent &#125; from './app.component';
+import &#123; AnotherComponent &#125; from './another.component';
+                    
+export const routes: Routes = [
+    &#123;
+        path: '',
+        redirectTo: '/my-app',
+        pathMatch: 'full'
+    &#125;,
+    &#123;
+        path: 'my-app',
+        component: AppComponent,
+        data: &#123;
+            meta: &#123;
+                title: 'Home',
+                description: 'First Page description'
+            &#125;
+        &#125; 
+    &#125;,
+    &#123;
+        path: 'another-app',
+        component: AnotherComponent,
+        data: &#123;
+            meta: &#123;
+                title: 'Another Page,
+                description: 'second Page description'
+            &#125;
+        &#125; 
+    &#125;
+&#125;
+export class AppRoutingModule &#123; &#125; 
+</code></pre>
+
+                <p>Now, import the <code>MetaService</code> and declare it inside constructor it will automatically set the title and meta infromation of the corresponding
+                pages using the value provided in <code>router.service.ts</code>.</p>
+<pre><code highlight class="typescript">
+import &#123; Component &#125; from '@angular/core';
+import &#123; MetaService &#125; from './meta.service';
+
+@Component (&#123;
+    selector: 'my-app',
+    template: `Hello Angular See the title of the page.`
+&#125;) 
+                        
+export class AppComponent &#123;
+    constructor(private metaService: MetaService)&#123; &#125;
+&#125;
+</code></pre>
+
+                <p>you can set default values for tags. These values are used when routes without meta: &#123;&#125; information
+                    are encountered. To know more about setting default options, setting meta tag programmatically visit
+                    <a href="https://github.com/vinaygopinath/ng2-meta#options" target="_blank" title="ng2-meta">ng2-meta</a>.</p>
+                
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="reference">
+                            <span>References: </span>
+                            <span><a href="https://github.com/vinaygopinath/ng2-meta#options" target="_blank" title="ng2-meta">ng2-meta</a></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="related_post_header">Related Posts</div>
+                        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                    </div>
+                </div>
+
+    </div>
+</div>

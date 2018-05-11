@@ -1,0 +1,170 @@
+<div class="row page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+        <h3 class="text-center">Show Posts related to current page in Angular2</h3>
+        <hr>
+            <iframe src="https://embed.plnkr.co/GwwH0Q4tbiYvboBuhLld/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+            <p>Allowing users to navigate throughout your site from topic to topic or show them the post that they want to read
+                makes for longer browsing time on the site. The more engaged your visitors are, the better chance they will
+                convert into a lead or a sale.
+                <br style="clear: both;">
+            </p>
+            <p>This post will explain how we can show related post in Angular way.</p>
+
+            <p>Here I'm going to use
+                <a href="https://www.npmjs.com/package/angular2-relatedpost" target="_blank" title="angular2-relatedpost">angular2-relatedpost</a>, which is a simple module for showing the related post.</p>
+
+            <h4>Setup</h4>
+            <p>Follow the following steps to use
+                <code>angular2-relatedpost</code>:</p>
+            <ul>
+                <li>Install angular2-relatedpost module by hitting command
+                    <b>npm install --save angular2-relatedpost</b>
+                </li>
+                <li>Add the mapping and package default extension for the package like
+                    <b>'angular2-relatedpost': 'node_modules/angular2-relatedpost'</b> and
+                    <b>'angular2-relatedpost': &#123; main: 'index.js', defaultExtension: 'js'&#125;</b> respectively to
+                    <b>systemjs.config.js</b> file.</li>
+            </ul>
+
+            <p>After installing the module and adding the module path to
+                <b>systemjs.config.js</b>, you can use the module to you application. Now, Import the
+                <code>RelatedPostComponent</code> and
+                <code>RelatedPostService</code> inside
+                <code>app.module.ts</code> as given below.</p>
+
+            <pre><code highlight class="typescript">
+@NgModule(&#123;
+  imports: [ BrowserModule, RouterModule.forRoot(routes) ],
+  providers: [RelatedPostService],
+  declarations: [ AppComponent, RelatedPostComponent, HomeComponent, ContactComponent, AboutComponent, other components... ],
+  bootstrap: [ AppComponent ]
+&#125;)
+export class AppModule &#123;&#125;
+                </code></pre>
+
+            <p>Now, When defining the route details then you have to provide some additional data that will be used by module
+                to filter the related posts. The additional information that the module need are</p>
+            <ul>
+                <li>
+                    <b>post_tags:</b> List of tags for that post (array of string). Used to filter out unrelated post and show
+                    only related post.</li>
+                <li>
+                    <b>post_title:</b> The title that will be shown in the related post.</li>
+                <li>
+                    <b>post_description:</b> Description about the post, it will be shown just below the post_title.</li>
+                <li>
+                    <b>post_image_url:</b> If you want to show related post with image then provide the image url.</li>
+                <li>
+                    <b>show_in_related_post:</b> set to false if you don't want to show that page in related post else set to
+                    true.</li>
+            </ul>
+            <p>So, the router will look something like that</p>
+            <pre><code highlight class="typescript">
+export const routes: Routes = [
+    &#123;
+        path: '',
+        redirectTo: '/home',
+        pathMatch: 'full'
+    &#125;,
+    &#123;
+        path: 'home',
+        component: HomeComponent,
+        data: &#123;
+            post_tags: ["Angular", "Angular2", "Home"],
+            post_title: 'Learn-Angular2 Home',
+            post_description: 'Related post description - Home page',
+            post_image_url: './images/img1.png',
+            show_in_related_post: 'false'
+        &#125;,
+    &#125;,
+    &#123;
+        path: 'contact',
+        component: ContactComponent,
+        data: &#123;
+            post_tags:  ["Angular", "Angular2", "Contact"],
+            post_title: 'Learn-Angular2 Contact',
+            post_description: 'Related post description - Contact page',
+            post_image_url: './images/img2.png',
+            show_in_related_post: 'true'
+        &#125;
+    &#125;,
+    &#123;
+        path: 'about',
+        component: AboutComponent,
+        data: &#123;
+            post_tags:  ["Angular", "Angular2", "About"],
+            post_title: 'Learn-Angular2 About',
+            post_description: 'Related post description - About page',
+            post_image_url: './images/img3.png',
+            show_in_related_post: 'true'
+        &#125;
+    &#125;
+];
+                </code></pre>
+
+            <p>Now, Inside your component's template just use the
+                <code>&lt;related-post&gt;</code> selector as given below
+                <p>
+                    <pre>
+                        <code highlight class="html">
+&lt;related-post [relatedPostMatchPercentage]="relatedPostMatchPercentage" [showRelatedPostImage]="showRelatedPostImage" [relatedPostCount]="relatedPostCount"&gt;&lt;/related-post&gt;
+                        </code>
+                    </pre>
+
+                    <p>Here, we are providing
+                        <code>relatedPostMatchPercentage</code>
+                        <code>showRelatedPostImage</code> and
+                        <code>relatedPostCount</code> as input to
+                        <code>&lt;related-post&gt;</code>. The significance to these input are as follows</p>
+
+                    <ul>
+                        <li>
+                            <b>relatedPostMatchPercentage:</b> Minimum tags matching required after which the post will be considered
+                            as related post. (For example if there are 4 tags and we set
+                            <code>relatedPostMatchPercentage=50</code>, then if any page's tags matches with atleast any 2 tags of current page then that page will
+                            be considered as related page). The default value is 50.</li>
+                        <li>
+                            <b>showRelatedPostImage:</b> Set to true if you want to show image with related post else set to
+                            false. The default is false.</li>
+                        <li>
+                            <b>relatedPostCount:</b> Maximum number of related post allowed (For example if there are 10 post
+                            related to current post and you pass
+                            <code>relatedPostCount=5</code> then only 5 post that have largest matching percentage among all matches will be shown as related
+                            post).</li>
+                    </ul>
+
+                    <p>If you want you can use the selector directly
+                        <b>without passing any value</b> as given below, then in that case the default value will be used.</p>
+                    <pre>
+                        <code highlight class="html">
+&lt;related-post&gt;&lt;/related-post&gt;
+                        </code>
+                    </pre>
+                    <p>and initialize those data inside compoent as</p>
+                    <pre><code highlight class="typescript">
+@NgModule(&#123;
+import &#123; Component &#125; from '@angular/core';
+
+@Component(&#123;
+  selector: 'my-selector',
+  templateUrl: `./app/demo.component.html`
+&#125;)
+export class DemoComponent &#123;
+    private showRelatedPostImage: boolean = false;
+    private relatedPostMatchPercentage: number = 70;
+    private relatedPostCount: number = 5;
+
+  constructor()&#123;
+  &#125;
+&#125;
+
+                </code></pre>
+                <p>See the working demo on <a href="https://embed.plnkr.co/GwwH0Q4tbiYvboBuhLld/?p=preview" target="_blank" title="angular2-relatedpost plunker">Plunker</a>.</p>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="related_post_header">Related Posts</div>
+                        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                    </div>
+                </div>
+    </div>
+</div>

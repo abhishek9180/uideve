@@ -1,0 +1,68 @@
+<div class="row  page-content">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <h3 class="text-center">Show and hide elements using ngIf and hidden in Angular2</h3>
+            <hr>
+                <iframe src="https://embed.plnkr.co/tmOrqw/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+                <p>
+                    <b>ngIf</b> is a structural directive, it creates or destroy contents inside the DOM conditionally. While
+                    <b>hidden</b> directive simply show and hide the HTML DOM conditionally.<br style="clear: both;"></p>
+                <div class="alert alert-info">
+                    <h5>What are structural directives?</h5>
+                    <p>Structural directives are responsible for HTML layout. They shape or reshape the DOM's structure, typically
+                        by adding, removing, or manipulating elements.</p>
+                </div>
+
+                <h4>But There are few differences between <b>ngIf and hidden</b>, they are</h4>
+                <ul>
+                    <li><a href="https://angular.io/guide/structural-directives" title="Angular Strutural directive" target="_blank"><code>ngIf</code> is a structural directive</a>,
+                        it creates or destroy content inside the HTML DOM conditionally. if the expression is <span class="code">false</span>                        then the corresponding HTML element and it's content won't be created.</li>
+                    <li>While <code>hidden</code> directive just show or hide the content with css, i.e. adding/removing element
+                        by adding css property <code>display: none/block;</code>. It's HTML and contents are always created
+                        irrespective to condition but they are not visible if the expression is false.
+                </ul>
+
+                <hr>
+
+                <h4>ngIf else</h4>
+
+                <p>The most common usage of the ngIf directive is to conditionally show the inline template as seen in this
+                    example:</p>
+                
+<pre><code highlight class="html">
+&lt;button (click)="show = !show"&gt;&#123;&#123;show ? 'hide' : 'show'&#125;&#125;&lt;/button&gt;
+show = &#123;&#123;show&#125;&#125;
+&lt;div *ngIf="show"&gt;Text to show&lt;/div&gt;
+</code></pre>
+               
+                <p>Like other languages Angular also provies the <b>if else</b> capabilities and if it is necessary to display
+                    a template when the <code>expression</code> is false use the <code>else</code> template binding.</p>
+                <p>Note that the <code>else</code> binding points to a <code>&lt;ng-template&gt;</code> labeled <code>#elseBlock</code>.
+                    The template can be defined anywhere in the component view but is typically placed right after ngIf for
+                    readability. See the example below.</p>
+
+<pre><code highlight class="html">
+&lt;button (click)="show = !show"&gt;&#123;&#123;show ? 'hide' : 'show'&#125;&#125;&lt;/button&gt;
+show = &#123;&#123;show&#125;&#125;
+&lt;div *ngIf="show; else elseBlock"&gt;Text to show&lt;/div&gt;
+&lt;ng-template #elseBlock&gt;Alternate text while primary text is hidden&lt;/ng-template&gt;                      
+</code></pre>
+               
+                <hr>
+                <h4>[hidden]</h4>
+                <p>The Angular <code>[hidden]</code> directive is used to show and hide the HTML DOM. See the example below.</p>
+
+<pre><code highlight class="html">
+&lt;button (click)="hidden = !hidden"&gt;&#123;&#123;hidden ? 'show' : 'hide'&#125;&#125;&lt;/button&gt;
+hidden = &#123;&#123;hidden&#125;&#125;
+&lt;div [hidden]="hidden"&gt;Text to show&lt;/div&gt;             
+</code></pre>
+                
+            <p>See the working demo on <a href="https://embed.plnkr.co/tmOrqw/?p=preview" target="_blank" title="ngIf else and [hidden] Example">Plunker</a>.</p>
+            <div class="row">
+                    <div class="col-xs-12">
+                        <div class="related_post_header">Related Posts</div>
+                        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                    </div>
+                </div>
+    </div>
+</div>

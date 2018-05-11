@@ -1,0 +1,26 @@
+{
+ "lang": "en",
+ "dir": "ltr",
+ "name": "Learn Angular2",
+ "description": "A Developer guide!",
+ "short_name": "Angular2",
+ "icons": [
+  {
+   "src": "\/android-icon-96x96.png",
+   "sizes": "96x96",
+   "type": "image\/png",
+   "density": "2.0"
+  },
+  {
+   "src": "\/android-icon-192x192.png",
+   "sizes": "192x192",
+   "type": "image\/png",
+   "density": "4.0"
+  }
+ ],
+ "start_url": "https://learn-angular2.com",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2d2d30",
+  "background_color": "#2d2d30"
+}

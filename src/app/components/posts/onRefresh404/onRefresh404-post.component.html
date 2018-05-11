@@ -1,0 +1,70 @@
+<div class="row  page-content">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <h3 class="text-center">Angular2-routing: 404 error when page is refreshed</h3>
+            <hr>
+                <p>
+                    Angular by default uses HTML5 pushstate (PathLocationStrategy) and uses html5 routing by default rather than using hashes
+                    at the end of the url, refreshing the page looks like a request for a different resource. As a result
+                    we get 404 error.
+                </p>
+                <hr>
+                <p>What happens is that the URL on the browser bar is a normal full HTML url, like for example: <code>http://localhost/route</code>.
+                    <br>So when we hit Enter in the browser bar, there is an actual HTTP request sent to the server to get
+                    a file named <code>route</code>. <br>The server does not have such file, and neither something like express
+                    is configured on the server to handle the request and provide a response, so the server return 404 Not
+                    Found, because it could not find the route file. If you want not having a 404 error, you need to update
+                    your server to serve the <code>index.html</code> file for each route path you defined or use <code>HashLocationStrategy</code>                    provided in <a href="https://angular.io/docs/ts/latest/api/common/index/HashLocationStrategy-class.html"
+                        traget="_blank" title="Angular2 API: HashLocationStrategy">Angular.io API</a>.<br> For this demo, I'm
+                    going to use <code>HashLocationStrategy</code>.</p>
+
+                <p>In order to use <b>HashBang(HashLocationStrategy)</b>, you need to configure you <code>app.module.ts</code> file</p>
+
+<pre><code highlight class="typescript">
+import &#123; NgModule &#125; from '@angular/core';
+import &#123; BrowserModule &#125; from '@angular/platform-browser';
+import &#123; RouterModule, Routes &#125; from '@angular/router';
+import &#123; AppComponent &#125; from './app.component';
+import &#123; HashLocationStrategy, LocationStrategy &#125; from '@angular/common';
+
+@NgModule (&#123;
+    imports: [ BrowserModule, RouterModule.forRoot(routes) ],
+    declarations: [ AppComponent, ... ],
+    providers: [ &#123;provide: LocationStrategy, useClass: HashLocationStrategy &#125; ], 
+    bootstrap: [ AppComponent ],
+&#125;) 
+        
+export class AppModule &#123; &#125;
+</code></pre>
+            
+
+                <p><b>Alternative</b> you can do it while registering your root with RouterModule, you can pass <code>useHash: true</code>                    as a second argument. <code>RouterModule.forRoot with &#123;useHash: true&#125;</code> argument in <b>imports</b> of <code>app.module.ts</code>.</p>
+
+<pre><code highlight class="typescript">
+import &#123; NgModule &#125; from '@angular/core';
+import &#123; BrowserModule &#125; from '@angular/platform-browser';
+import &#123; RouterModule, Routes &#125; from '@angular/router';
+import &#123; AppComponent &#125; from './app.component';
+import &#123; routes &#125; from './app.router';
+import &#123; HashLocationStrategy, LocationStrategy &#125; from '@angular/common';
+
+@NgModule (&#123;
+    imports: [ BrowserModule, RouterModule.forRoot(routes, &#123; useHash: true &#125;) ],
+    declarations: [ AppComponent, ... ],
+    bootstrap: [ AppComponent ],
+&#125;) 
+        
+export class AppModule &#123; &#125;
+</code></pre>
+                
+                <p>After configuration, whenever you refresh your browser you'll notice that the url of the page changed from
+                    <code>http://localhost/route</code> to <code>http://localhost:3000/#/route</code> which is the result
+                    of using <code>HashLocationStrategy</code>.
+
+                    <div class="row">
+                            <div class="col-xs-12">
+                                <div class="related_post_header">Related Posts</div>
+                                <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                            </div>
+                        </div>
+        </div>
+    </div>

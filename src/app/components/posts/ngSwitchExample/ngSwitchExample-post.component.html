@@ -1,0 +1,49 @@
+<div class="row  page-content">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <h3 class="text-center">Show and hide elements using ngSwitch in Angular2</h3>
+            <hr>
+                <iframe src="http://embed.plnkr.co/ghZRdS/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+                <p>
+                    <b>ngSwitch</b> is an angular directive that displays one element from a possible set of elements based
+                    on some condition. ngSwitch uses ngSwitchCase keyword to define a set of possible element trees and ngSwitchDefault
+                    is used to define default value when expression condition does not match to any element tree defined
+                    by ngSwitchCase. ngSwitch is actually comprised of two directives, an attribute directive and a structural
+                    directive. It's very similar to a switch statement in JavaScript and other languages.<br style="clear: both;"></p>
+                <hr>
+
+                <h4>How to Use?</h4>
+<pre><code highlight class="html">
+&lt;container-element [ngSwitch]= "switch_expression"&gt;
+    &lt;some-element *ngSwitchCase= "match_expression_1"&gt;...&lt;/some-element&gt;
+    &lt;some-element *ngSwitchCase= "match_expression_2"&gt;...&lt;/some-element&gt;
+    &lt;some-element *ngSwitchCase= "match_expression_3"&gt;...&lt;/some-element&gt;
+    &lt;some-element *ngSwitchDefault&gt;...&lt; /some-element&gt;
+&lt;/container-element&gt;
+</code></pre>
+                
+                <p>Keep three things in mind while using ngSwitch.</p>
+                <ul>
+                    <li><b>ngSwitch</b> - bind an expression to it that returns the switch value. It uses property binding..</li>
+                    <li><b>ngSwitchCase</b> - Defines what to render when the value of the property defined in ngSwitchChanges.</li>
+                    <li><b>ngSwitchDefault</b> - Defines what to render if the value doesn't match. The default will be rendered.</li>
+                </ul>
+
+                <p>See the below example.</p>
+<pre><code highlight class="html">
+&lt;div [ngSwitch]="template"&gt;
+    &lt;div *ngSwitchCase="1"&gt;...&lt;/div&gt;
+    &lt;div *ngSwitchCase="2"&gt;...&lt;/div&gt;
+    &lt;div *ngSwitchCase="3"&gt;...&lt;/div&gt;
+    &lt;div *ngSwitchDefault&gt;...&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+                
+                <p>See the working demo on <a href="http://plnkr.co/edit/mXrxuZ69OwMAItSWbWNf?p=preview" target="_blank" title="ngSwitch Example">Plunker</a>.</p>
+            <div class="row">
+                    <div class="col-xs-12">
+                        <div class="related_post_header">Related Posts</div>
+                        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                    </div>
+                </div>
+    </div>
+</div>

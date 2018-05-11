@@ -1,0 +1,191 @@
+<div class="row  page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <h3 class="text-center">Share Data Across 2 Components Using Service in Angular2</h3>
+            <hr>
+            <iframe src="https://embed.plnkr.co/esU8tXhPKuydZIiG9r6i/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+            <p><b>Services</b> are used to share data between components. They follow a module pattern that allows you
+            to share the data throughout your application so that your data is consistent and in sync.<br style="clear: both;"></p>
+            <!-- First row -->
+            <p>Service's data can be shared between components by two ways</p>
+            <ol>
+                <li>Declare the service in the providers of a <code>@NgModule</code>.</li>
+                <li>Declare the service in the providers of a <code>@Component</code> which must be <b>parent of the components</b>.</li>
+            </ol>
+            <hr>
+            <p>But we'll follow the first approach. So, create the first component file as give below</p>
+
+<pre><code highlight class="typescript">
+import &#123;Component&#125; from '@angular/core';
+import &#123; TestService &#125; from './test.service';
+
+@Component(&#123;
+  selector: 'my-app',
+  template: `
+    &lt;h1&gt;Hello, I'm from first component.&lt;/h1&gt;
+    &lt;h3&gt;Click below to update the value&lt;/h3&gt;
+    &lt;button (click)="updateData()"&gt;Update Data&lt;/button&gt;&lt;br&gt;&lt;br&gt;
+    &lt;div class="data"&gt;Data : &#123;&#123;data&#125;&#125;&lt;/div&gt;&lt;br&gt;&lt;hr&gt;
+    &lt;update&gt;&lt;/update&gt;
+  `,
+&#125;)
+export class App &#123;
+  data: number;
+   constructor( private testService: TestService)&#123;
+       this.data = testService.data;
+   &#125; 
+   updateData()&#123; 
+       this.data = this.testService.updateData();
+   &#125; 
+&#125;
+</code></pre>
+
+            <p>So, inside this Component's template there is a <code>click</code> event associated with button which calls <code>updateData()</code> method and <code>updateData()</code> further calls another method <code>updateService()</code> of <code>TestService</code> Component. The <code>updateService()</code> increments it's <code>data</code> by one everytime when we
+            click on <b>Update Data</b> button of First Component.</p>
+            <p>The second component look like this</p>
+
+<pre><code highlight class="typescript">
+import &#123; Component &#125; from '@angular/core';
+import &#123; TestService &#125; from './test.service';
+
+@Component (&#123;
+    selector: 'update',
+    template:`
+        &lt;h1&gt;Hello, I'm from second component.&lt;/h1&gt;
+        &lt;h3&gt;Click below to update the value&lt;/h3&gt;
+        &lt;button (click)="getData()"&gt;Get Updated Data&lt;/button&gt;&lt;br&gt;&lt;br&gt;
+        &lt;div class="data"&gt;Data : &#123;&#123;data&#125;&#125;&lt;/div&gt;&lt;br&gt;
+   `
+&#125;) 
+export class UpdateComponent &#123;
+   data: number;
+   constructor( private testService: TestService)&#123;
+       this.data = testService.data;
+   &#125; 
+   
+   getData()&#123; 
+       this.data = this.testService.data;
+   &#125; 
+&#125;
+</code></pre>
+
+            <p>For Second Component's template, there is also another <code>click</code> event associated with button. So,
+            whenever we click on <b>Get Updated Data</b> button it Invokes <code>getData()</code> method. The <code>getData()</code>                    method gets the updated value of data form <code>test.service.ts</code> and assign it to it's <code>data</code>                    variable and we get the updated value.</p>
+            <p>So the last part is service. Here, we'll declare a local variable <code>data</code> and initialize it inside
+            constructor. The <code>updateService()</code> method of <code>TestService</code> will increment the value
+            by <b>1</b> whenever called.</p>
+
+<pre><code highlight class="typescript">
+import &#123; Injectable &#125; from '@angular/core';
+
+@Injectable()
+export class TestService &#123;
+   data: number;
+   constructor()&#123; 
+       this.data = 10;
+   &#125; 
+   updateService()&#123; 
+       return ++this.data;
+   &#125; 
+&#125;
+</code></pre>
+
+
+            <div class="alert alert-info">
+                <p>The <code>@Injectable()</code> decorator tells TypeScript to emit metadata about the service. The metadata
+                specifies that Angular may need to inject other dependencies into this services.</p>
+            </div>
+            <p>Now, Provide the service inside <code>AppModule</code> as <code>providers: [ TestService ]</code>. So that
+            it will be available throughout the application and only one instance will be created.</p>
+
+            <p>Here is the Complete Code...</p>
+            <h4>src/app.ts</h4>
+
+<pre><code highlight class="typescript">
+import &#123;Component, NgModule, VERSION&#125; from '@angular/core'
+import &#123;BrowserModule&#125; from '@angular/platform-browser'
+
+import &#123; TestService &#125; from './test.service';
+import &#123; UpdateComponent &#125; from './update.component';
+
+@Component(&#123;
+  selector: 'my-app',
+  template: `
+      &lt;h1&gt;Hello, I'm from first component.&lt;/h1&gt;
+      &lt;h3&gt;Click below to update the value&lt;/h3&gt;
+      &lt;button (click)="updateData()"&gt;Update Data&lt;/button&gt;&lt;br&gt;&lt;br&gt;
+      &lt;div class="data"&gt;Data : &#123;&#123;data&#125;&#125;&lt;/div&gt;&lt;br&gt;&lt;hr&gt;
+      &lt;update&gt;&lt;/update&gt;
+  `,
+&#125;)
+export class App &#123;
+  data: number;
+   constructor( private testService: TestService)&#123;
+       this.data = testService.data;
+   &#125; 
+   updateData()&#123; 
+       this.data = this.testService.updateService();
+   &#125; 
+&#125;
+
+@NgModule(&#123;
+  imports: [ BrowserModule ],
+  declarations: [ App, UpdateComponent ],
+  bootstrap: [ App ],
+  providers: [ TestService ]
+&#125;)
+export class AppModule &#123;&#125;
+</code></pre>
+
+                <h4>src/update.component.ts</h4>
+<pre><code highlight class="typescript">
+import &#123; Component &#125; from '@angular/core';
+
+import &#123; TestService &#125; from './test.service';
+
+@Component (&#123;
+    selector: 'update',
+    template:`
+       &lt;h1&gt;Hello, I'm from second component.&lt;/h1&gt;
+       &lt;h3&gt;Click below to update the value&lt;/h3&gt;
+       &lt;button (click)="getData()"&gt;Get Updated Data&lt;/button&gt;&lt;br&gt;&lt;br&gt;
+       &lt;div class="data"&gt;Data : &#123;&#123;data&#125;&#125;&lt;/div&gt;&lt;br&gt;
+   `
+&#125;) 
+export class UpdateComponent &#123;
+   data: number;
+   constructor( private testService: TestService)&#123;
+       this.data = testService.data;
+   &#125; 
+   
+   getData()&#123; 
+       this.data = this.testService.data;
+   &#125; 
+&#125;
+</code></pre>
+
+                <h4>test.service.ts</h4>
+<pre><code highlight class="typescript">
+import &#123; Injectable &#125; from '@angular/core';
+
+@Injectable()
+export class TestService &#123;
+   data: number;
+   constructor()&#123; 
+       this.data = 10;
+   &#125; 
+   updateService()&#123; 
+       return ++this.data;
+   &#125; 
+&#125;
+</code></pre>
+
+            <p>See the working demo on <a href="https://embed.plnkr.co/esU8tXhPKuydZIiG9r6i/" target="_blank" title="Share Data across Components Angular2">Plunker</a>.</p>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="related_post_header">Related Posts</div>
+                    <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                </div>
+            </div>
+    </div>
+</div>

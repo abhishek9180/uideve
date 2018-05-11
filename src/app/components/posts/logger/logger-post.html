@@ -1,0 +1,245 @@
+<div class="row  page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+        <h3 class="text-center">Log Error, Debug and Info messages to console and server in Angular2</h3>
+        <hr>
+            <iframe src="https://embed.plnkr.co/zNyeqS/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+            <p>
+              <b>Loggers</b> are used to track the errors of applications whenever any error occured to the application. You
+              can also use the logger to debug the code. There are many logger modules available in angular2 and some of them
+              are</p>
+            <ul>
+              <li><a href="https://www.npmjs.com/package/angular2-logger" target="_blank" title="angular2-logger">angular2-logger</a></li>
+              <li><a href="https://www.npmjs.com/package/ng2-logger" target="_blank" title="ng2-logger">ng2-logger</a></li>
+              <li><a href="https://www.npmjs.com/package/ng2.logger" target="_blank" title="ng2.logger">ng2.logger</a></li>
+              <li><a href="https://www.npmjs.com/package/ng2.logger" target="_blank" title="ng2.logger">ng2.logger</a></li>
+            </ul>
+    
+            <hr>
+            <p>But here, I am going to use <b>ng2.logger</b> which is capable of logging error, debug, info and trace messages to
+              the console and server side as well. </p>
+    
+            <p> Create a file named <code>src/logger.service.ts</code> and add the below code there.</p>
+<pre><code highlight class="typescript">
+import &#123;Injectable, Optional&#125; from '@angular/core';
+import * as moment from 'moment'
+import &#123;Http, Headers, RequestOptions&#125; from "@angular/http";
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+    
+export class LoggerConfig &#123;
+  level: string;
+  serverLoggingUrl?: string;
+  serverLogLevel?: string;
+&#125;
+    
+enum Levels &#123;
+  'TRACE',
+  'DEBUG',
+  'INFO',
+  'LOG',
+  'WARN',
+  'ERROR',
+  'OFF'
+&#125;
+    
+@Injectable()
+  export class NG2Logger &#123;
+    constructor(private http: Http, @Optional() private options: LoggerConfig) &#123; &#125;
+    
+    private _logOnServer(level: string, message: string) &#123;
+      if (!this.options.serverLoggingUrl) return;
+        //if the user provides a serverLogLevel and the current level is than that do not log     if (this.options.serverLogLevel && Levels[level] < Levels[this.options.serverLogLevel])
+        return;
+    
+      let headers = new Headers(&#123;'Content-Type': 'application/json'&#125;);
+      let options = new RequestOptions(&#123;headers: headers&#125;);
+    
+      this.http.post(this.options.serverLoggingUrl, &#123;level: level, message: message&#125;, options)
+        .map(res => res.json())
+        .catch(error => error)
+        .subscribe(
+          res => null,
+          error => this._log('ERROR', 'FAILED TO LOG ON SERVER', false)
+      );
+    &#125;
+    
+    private _log(level: string, message: string, logOnServer: boolean) &#123;
+      if (!message) return;
+    
+      let color1;
+    
+      switch (level) &#123;
+        case 'TRACE': color1 = 'blue'; break;
+        case 'DEBUG': color1 = 'teal'; break;
+        case 'INFO':
+        case 'LOG': color1 = 'gray'; break;
+        case 'WARN':
+        case 'ERROR': color1 = 'red'; break;
+        case 'OFF':
+        default: return;
+      &#125;
+      //if the log level is greater than the environ
+      if (Levels[level] >= Levels[this.options.level]) &#123;
+        console.log(`%c$&#123;moment.utc().format()&#125; [$&#123;level&#125;] %c$&#123;message&#125;`, `color:$&#123;color1&#125;`, 'color:black');
+    
+      if (logOnServer) &#123;
+        this._logOnServer(level, message);
+      &#125;
+    &#125;
+  &#125;
+    
+  trace(message: string) &#123;
+    this._log('TRACE', message, true);
+  &#125;
+    
+  debug(message: string) &#123;
+    this._log('DEBUG', message, true);
+  &#125;
+    
+  info(message: string) &#123;
+    this._log('INFO', message, true);
+  &#125;
+    
+  log(message: string) &#123;
+    this._log('LOG', message, true);
+  &#125;
+    
+  warn(message: string) &#123;
+    this._log('WARN', message, true);
+  &#125;
+    
+  error(message: string) &#123;
+    this._log('ERROR', message, true);
+  &#125;
+&#125;
+</code></pre>
+    
+            <p>Here, <code>logger.service.ts</code> file contains different methods like <code>error(message: string), debug(message: string), trace(message: string)</code>          etc. that will call the <code>_log(level: string, message: string, logOnServer: boolean)</code> method and pass
+              the data as well. So, <b>_log(...)</b> method prints the log messages to the console and calls the <code>_logOnServer(level: string, message: string)</code>          method which sends the log messages to the server. Since <b>moment</b> is external node module, So we have to install
+              it run the command <code>npm install moment --save</code> to install moment module. After that add the following
+              line to <b>systemjs.config.js</b>file</p>
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-rightbar w3-border-blue">
+              <p>map: &#123; 'moment': 'node_modules/moment' &#125;</p>
+              <p>packages: &#123; 'moment': &#123;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;main: './moment.js',<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defaultExtension:
+                'js'<br> &nbsp;&nbsp;&#125;,
+                <br> &#125;
+              </p>
+            </div>
+            <p>Now, create a file <code>src/logger.module.ts</code>
+
+<pre><code highlight class="typescript">
+import &#123;NgModule, ModuleWithProviders&#125; from '@angular/core';
+import &#123;CommonModule&#125; from '@angular/common';
+import &#123;NG2Logger, LoggerConfig&#125; from './logger.service';
+    
+@NgModule(&#123;
+  imports: [ CommonModule ],
+  providers: [NG2Logger],
+&#125;)
+    
+export class LoggerModule &#123;
+  static forRoot(config: LoggerConfig | null | undefined): ModuleWithProviders &#123;
+    return &#123;
+      ngModule: LoggerModule,
+      providers: [&#123;provide: LoggerConfig, useValue: config || &#123;&#125;&#125;]
+    &#125;;
+  &#125;
+&#125;
+</code></pre>
+    
+              <p>Now, import <code>NG2Logger</code> and <code>LoggerModule</code> to <code>src/app.ts</code>. Since, We'll use the
+                logger service throughout the application so we need to provide it inside providers like <code>providers: [ NG2Logger ]</code>.
+                import LoggerModule and provide the <b>serverLoggingUrl</b> and <b>level</b>. So that it will only pass the log
+                which are having level above that. For example, if you provide <b>level: "LOG"</b> then it will log <b>LOG, WARN and ERROR</b>.</p>
+              <p>Declare <code>NG2Logger</code> inside constructor and use it by calling different log functions.</p>
+
+<h3>src/app.ts</h3>
+<pre><code highlight class="typescript">
+import &#123;Component, NgModule, VERSION&#125; from '@angular/core';
+import &#123;BrowserModule&#125; from '@angular/platform-browser';
+import &#123; HttpModule &#125; from '@angular/http';
+import &#123; NG2Logger &#125; from './logger.service';
+import &#123; LoggerModule &#125; from './logger.module';
+    
+@Component(&#123;
+  selector: 'my-app',
+  template: `
+        &lt;div&gt;
+          &lt;h2&gt;Hello 
+        Press F12 to see the log messages on console.&lt;/h2&gt;
+        &lt;/div&gt;
+      `,
+&#125;)
+    
+export class App &#123;
+  constructor(private logger: NG2Logger)&#123;
+    this.logger.log("This is log message");
+    this.logger.error("This is error message");
+    this.logger.debug("This is log message");
+    this.logger.warn("This is log message");
+    this.logger.info("This is log message");
+    this.logger.trace("This is log message");
+  &#125;
+&#125;
+    
+@NgModule(&#123;
+  imports: [ BrowserModule,HttpModule, LoggerModule.forRoot(&#123;serverLoggingUrl: '/api/logs', level: 'DEBUG'&#125;) ],
+  declarations: [ App ],
+  bootstrap: [ App ],
+  providers: [ NG2Logger ]
+&#125;)
+
+export class AppModule &#123;&#125;
+</code></pre>
+    
+              <p>To get the log messages to the server you have to create a server that will read the Post data. Below is the small
+                Nodejs program which will read data sent by the <b>logger.service.ts</b>. You have to run the server by command
+                <b>node server.js</b> but you'll get the CORS issue as we are trying to access the cross-origin resource. To
+                resolve it you can either set the header in <b>server.js</b> file or just disable the brwoser's web-security
+                by command <code>chrome.exe --user-data-dir="C://Chrome dev session" --disable-web-security</code> and run the
+                server again.
+
+<pre><code highlight class="javascript">
+var http = require('http');
+    
+http.createServer(function (req, res) &#123;
+  var body = "";
+  req.on('data', function (chunk) &#123;
+    body += chunk;
+  &#125;);
+  req.on('end', function () &#123;
+    console.log('POSTed: ' + body);
+    res.writeHead(200);
+    res.end();
+  &#125;);
+&#125;).listen(8080);
+</code></pre>
+                <div class="row"> 
+                  <div class="col-xs-12" style="text-align: center;">
+                    <img style="width: 100%" src="../../../assets/images/log-to-console.PNG" alt="Log to console">
+                    <div class="text-center">
+                      <p>Log messages to console window</p>
+                    </div>
+                  </div>
+                </div>
+    
+                <p>See the working demo of this example on <a href="https://embed.plnkr.co/zNyeqS/" target="_blank" title="Angular2 Logger">Plunker</a>.</p>
+                
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="reference">
+                            <span>References: </span>
+                            <span><a href="https://github.com/dbfannin/ng2-logger/" target="_blank" alt="ng2.logger Git">ng2.logger GitHub</a></span>, 
+                            <span><a href="https://www.npmjs.com/package/ng2.logger" target="_blank" alt="ng2.logger npmjs">ng2.logger npmjs</a></span>
+                        </div>
+                    </div>
+                </div>
+                         
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="related_post_header">Related Posts</div>
+                        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                    </div>
+                  </div>
+    </div>
+</div>

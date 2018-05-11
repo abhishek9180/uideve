@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Learn-Angular2</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="title" content="Learn-Angular2">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Lean-Angular2">
+  <meta name="og:title" content="Learn-Angular2">
+  <meta name="description" content="Learn-Angular2 Provides the solutions of many problems that we face during the development of angular2 applications. Here I will tell you about angular2 services, loggers, components and many more...">
+  <meta name="og:description" content="Learn-Angular2 Provides the solutions of many problems that we face during the development of angular2 applications. Here I will tell you about angular2 services, loggers, components and many more...">
+  <link rel="icon" sizes="192x192" href="/assets/images/android-icon-192x192.png">
+  <!-- <meta name="google-signin-client_id" content="964449167882-4316gqc1abfmmu023m7pkjitla1o4uhj.apps.googleusercontent.com"> -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#2d2d30">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="none" onload="if(media!='all')media='all'">
+  <style>
+    .outer {
+        display: table;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    .middle {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+    }
+    #myProgress {
+      width: 150px;
+      background-color: #ddd;
+      height: 3px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    
+    #myBar {
+      width: 75px;
+      height: 3px;
+      position: relative;
+      background-color: #2d2d30;
+      -webkit-animation: movingBar 1S infinite;
+      animation: movingBar 1s infinite;
+      animation-timing-function: ease-in-out;
+      -webkit-animation-timing-function: ease-in-out;
+    }
+
+    /* Safari 4.0 - 8.0 */
+    @-webkit-keyframes movingBar {
+      0% {left:-20px;}
+      50% {left: 95px;}
+      100% {left: -20px;}
+    }
+
+    /* Standard syntax */
+    @keyframes movingBar {
+      0% {left:-20px;}
+      50% {left: 95px;}
+      100% {left: -20px;}
+    }
+  </style>
+</head>
+
+  <body>  
+    <app-root>
+        <div class="outer">
+            <div class="middle">
+              <span>Loading...</span>
+              <div id="myProgress">
+                <div id="myBar"></div>
+              </div>
+            </div>
+          </div>
+    </app-root>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css" media="none" onload="if(media!='all')media='all'">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="./assets/css/github.css" media="none" onload="if(media!='all')media='all'">
+    <script src="./assets/scripts/highlight.pack.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script>if ('serviceWorker' in navigator && 'PushManager' in window) {console.log('Service Worker and Push is supported');navigator.serviceWorker.register('/sw.js').then(function(swReg) {console.log('Service Worker is registered', swReg);swRegistration = swReg;}).catch(function(error) {console.error('Service Worker Error', error);});} else {
+      console.warn('Push messaging is not supported');}</script>
+  </body>
+</html>

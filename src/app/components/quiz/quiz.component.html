@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" *ngFor="let c of chapter">
+        <div class="offer offer-default">
+            <div class="shape" [ngClass]="{'quiz-pass': c.status==='P', 'quiz-fail': c.status==='F', 'quiz-not-started': c.status==='N', 'quiz-progress': c.status==='PR'}">
+                <div class="shape-text">
+                    <span class="glyphicon" [ngClass]="{'glyphicon-ok-sign': c.status==='P', 'glyphicon-exclamation-sign': c.status==='F', 'glyphicon-remove-sign': c.status==='N', 'glyphicon-time': c.status==='PR'}"></span>	
+                </div>
+            </div>
+            <div class="offer-content">
+                <h3 class="lead">
+                    {{c.chapter_no}}. {{c.chapter_name}}
+                </h3>
+                <div>
+                    <span *ngIf="c.status != 'N'" class="badge">{{c.score}}/{{c.total}}</span>
+                    <button type="button" class="btn pull-right" [ngClass]="{'btn-success': c.status==='P', 'btn-danger': c.status==='F', 'btn-not-started': c.status==='N', 'btn-warning': c.status==='PR'}">Start Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

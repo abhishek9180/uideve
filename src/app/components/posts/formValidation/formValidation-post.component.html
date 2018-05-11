@@ -1,0 +1,126 @@
+<div class="row  page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+        <h3 class="text-center">Form Validation in Angular2 (Template Driven)</h3>
+        <hr>
+        <iframe src="https://embed.plnkr.co/P0YC8p/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+        
+        <p>In Template Driven Form Validation approach, we arrange form elements in the component's template. To validate user input,
+        we add HTML validation attributes to the elements. Angular interprets those as well, adding validator
+        function to the control model.</p>
+        <p>Angular exposed information about the state of the controls including whether the user has "touched" the
+        control or made changes and if the control values are valid.</p>
+        <hr>
+        <p>In the example below, the HTML that reads the control state and update the display appropriately.</p>
+                
+        <h4>src/app.html (template file)</h4>
+<pre><code highlight class="html">
+&lt;form class="w3-container" name="contactForm" #contactForm="ngForm" method="POST" novalidate&gt;
+    &lt;p&gt;
+        &lt;label for="username"&gt;Name&lt;/label&gt;
+        &lt;input class="w3-input" type="text" name="username" id="name" required minlength="4" maxlength="24" [(ngModel)]="model.username" #username="ngModel"&gt;
+    &lt;/p&gt;
+    &lt;div *ngIf="username.errors && (username.dirty || username.touched)" class="invalidData"&gt;
+        &lt;div [hidden]="!username.errors.required"&gt;
+            Name is required
+        &lt;/div&gt;
+        &lt;div [hidden]="!username.errors.minlength"&gt;
+            Name must be at least 4 characters long.
+        &lt;/div&gt;
+        &lt;div [hidden]="!username.errors.maxlength"&gt;
+            Name cannot be more than 24 characters long.
+        &lt;/div&gt;
+    &lt;/div&gt;                
+    &lt;p&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input class="w3-input" type="email" name="email" id="email" required minlength="4" maxlength="30" [(ngModel)]="model.email" #email="ngModel"&gt;
+    &lt;/p&gt;
+    &lt;div *ngIf="email.errors && (email.dirty || email.touched)" class="invalidData"&gt;
+        &lt;div [hidden]="!email.errors.required"&gt;
+            Email is required
+        &lt;/div&gt;
+        &lt;div [hidden]="!email.errors.minlength"&gt;
+            Email must be at least 4 characters long.
+        &lt;/div&gt;
+        &lt;div [hidden]="!email.errors.maxlength"&gt;
+            Email cannot be more than 30 characters long.
+        &lt;/div&gt;
+    &lt;/div&gt;
+              
+    &lt;button type="submit" class="w3-button w3-round w3-right w3-teal" [disabled]="!contactForm.form.valid"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+                
+        <p><b>Note the following:</b></p>
+        <ul>
+            <li>The <code>&lt;input&gt;</code> element carries the HTML Validation attributes: <code>required</code>, <code>minlength</code>, <code>maxlength</code>.</li>
+            <li>The <code>name</code> attribute of the input is set to some value ("username") so Angular can track this input element and associate it with an Angular form control called <code>name</code> in its internal control model.</li>
+            <li>The <code>[(ngModel)]</code> directive allows two-way data binding between the input box to the <code>model.username</code> property.</li>
+            <li>The template variable <code>#username= "ngModel"</code> gives a reference to the Angular <code>NgModel</code> directive associated with this control that we uses in the template to check for control states such as <code>valid</code> and <code>dirty</code>.</li>
+            <li>The <code>*ngIf</code> on the <code>&lt;div&gt;</code> element reveals a set of nested message but only if there are <code>name</code> error and the control is either <code>dirty</code> or <code>touched</code>.
+            <li>Each nested <code>&lt;div&gt;</code> can present a custom message for one of the possible validation errors. In our case, we have messages for <code>required</code>, <code>minlength</code>, <code>maxlength</code>.</li>
+        </ul>
+
+        <div class="alert alert-info">
+            <h4>Why check for dirty and touched?</h4>
+            <p>The app shouldn't show any error message if the form is not touched or modified That's why we check for it.</p>
+            <ul>
+                <li><code>dirty</code>: tells whether the form has been modified or not.</li>
+                <li><code>touched</code>: tells whether the form has been touched or not.</li>
+            </ul>
+        </div>
+
+        <h4>src/app.ts (Component file)</h4>
+<pre><code highlight class="typescript">
+@Component(&#123;
+  selector: 'my-app',
+  templateUrl: `src/app.html`,
+&#125;)
+export class App &#123;
+  model = &#123;
+    username: "",
+    email: ""
+  &#125;;
+  constructor() &#123;  &#125;
+&#125;
+</code></pre>
+
+        <p>So, here I have defined <code>model</code> property Whick is useful for two-way data binding.</p>
+        <p>We can also indicate invalide input data instead on showing the error message if we want. For this we have
+        to only modify our template file <code>src/app.html</code> as:</p>
+
+        <h4><code>src/app.html</code></h4>
+<pre><code highlight class="html">
+&lt;form class="w3-container" name="contactForm" #contactForm="ngForm" method="POST" novalidate&gt;
+    &lt;p&gt;
+        &lt;label for="username"&gt;Name&lt;/label&gt;
+        &lt;input class="w3-input" type="text" name="username" [ngClass]="&#123;'invalidData': username.errors && (username.dirty || username.touched)&#125;" required minlength="4" maxlength="24" [(ngModel)]="model.username" #username="ngModel"&gt;
+    &lt;/p&gt;             
+    &lt;p&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input class="w3-input" type="email" name="email" [ngClass]="&#123;'invalidData': email.errors && (email.dirty || email.touched)&#125;" required minlength="4" maxlength="30" [(ngModel)]="model.email" #email="ngModel"&gt;
+    &lt;/p&gt;
+              
+    &lt;button type="submit" class="w3-button w3-round w3-right w3-teal" [disabled]="!contactForm.form.valid"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+            
+        <p>Here, I'm simply applying <code>invalidData</code> class to form <code>&lt;input&gt;</code> if the <code>&lt;input&gt;</code>                        is touched or modified and invalid.</p>
+        <p>See the working demo of Both examples on <a href="https://embed.plnkr.co/P0YC8p/" target="_blank" title="Angular2 Form Validation Example">Plunker</a>.</p>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="reference">
+                    <span>References: </span>
+                    <span><a href="https://angular.io/guide/form-validation" target="_blank" title="Form validation">angular.io</a></span>
+                </div>
+            </div>
+        </div>
+                 
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="related_post_header">Related Posts</div>
+                <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+            </div>
+        </div>
+    </div>
+</div>

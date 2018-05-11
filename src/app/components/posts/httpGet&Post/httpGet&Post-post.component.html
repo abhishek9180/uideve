@@ -1,0 +1,340 @@
+<div class="row  page-content">
+  <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+    <h3 class="text-center">Angular2 Http get() & post() using Observable and Promise</h3>
+    <hr>
+    <iframe src="https://embed.plnkr.co/WUiX4IFCGCrqPGhAAHnG/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+    <p>The angular <b>Http</b> library is the primary protocol for <b>client/server</b> communication. It communicates with
+    the server using <b>Http request/response</b> protocol using <code>XMLHttpRequest</code> as the default backend.
+    </p>
+    <hr>
+    <h4>Using Http Services</h4>
+    <p>For using <b>Http</b> library, we need to Configure the application by registering it as a service provider with
+    the dependency injection system. That means we have to Register the providers by importing other NgModules to the
+    root NgModule in <code>src/app.ts</code></p>
+        
+    <h4>src/app.ts</h4>
+<pre><code highlight class="typescript">        
+@NgModule(&#123;
+  imports: [ BrowserModule, FormsModule, HttpModule ],
+  declarations: [ App ],
+  providers: [ LoginService ],
+  bootstrap: [ App ]
+&#125;)
+export class AppModule &#123;&#125;
+</code></pre>
+
+    <div class="alert alert-info">
+      <p>The <code>HttpModule</code> is necessary for making HTTP calls. When importing from the <code>@angular/http</code>            module, SystemJS knows how to load services from Angular HTTP library because the <code>system.config.js</code>            file maps to that module name.</p>
+    </div>
+    <p>As we have imported <code>HttpModule</code> in our root NgModule. So, now we can use its <code>get() and post()</code>          methods</p>
+        
+    <h4>Http.get()</h4>
+<pre><code highlight class="typescript">
+get(url: string, options?: RequestOptionsArgs): Observable&lt;Response&gt;
+</code></pre>
+
+    <p>It performs a request with <code>get</code> http method. The HTTP get() method accepts following arguments
+    <ul>
+      <li><b>url:</b> This is HTTP URL by which we get the data from the server.</li>
+      <li><b>options:</b> This is optional. Here we pass the header data (like <code>content-type, Authorization headers etc.</code>              which is the instance of <code>RequestOptionsArgs</code>.</li>
+      <li><b>Observable&lt;Response&gt;:</b> This is the return type of <code>Http.get().</code></li>
+    </ul>
+
+    <h4>Http.post()</h4>
+<pre><code highlight class="typescript">
+post(url: string, body: any, options?: RequestOptionsArgs): Observable&lt;Response&gt;
+</code></pre>
+
+    <p>It performs a request with <code>post</code> http method. The HTTP post() method accepts following arguments
+    <ul>
+      <li><b>url:</b> This is HTTP URL by which we post the data to the server.</li>
+      <li><b>body:</b> It contains the data that we need to post to the server.</li>
+      <li><b>options:</b> This is optional. Here we pass the header data (like <code>content-type, Authorization headers etc.</code>                which is the instance of <code>RequestOptionsArgs</code>.</li>
+      <li><b>Observable&lt;Response&gt;:</b> This is the return type of <code>Http.get().</code></li>
+    </ul>
+
+    <div class="alert alert-info">
+      <h4>What is Promise and Observable?</h4>
+      <p><b>Promise:</b></p>
+      <p> A <code>Promise</code> handles a single event when an async operation completes or fails.</p>
+      <p><b>Observable:</b></p>
+      <p> An <code>Observable</code> is like a Stream and allows to pass zero or more events where the callback is called
+      for each event.</p>
+      <p><code>Observable</code> is often preferred over <code>Promise</code> because it provides the features of <code>Promise</code>                and more. With <code>Observable</code> it doesn't matter if we want to handle 0, 1 or multiple events.</p>
+      <p><code>Observable</code> also has the advantage over <code>Promise</code> to be <b>cancelable</b>. If the result
+      of an HTTP request to a server or some other expensive async operation isn't needed anymore, the <code>Subscription</code>                of an <code>Observable</code> allows to cancel the subscription, while a <code>Promise</code> will eventually
+      call the success or failed callback even when you don't need the notification or the result it provides anymore.</p>
+    </div>
+
+    <h4>Http.get() with Observable & Promise</h4>
+<pre><code highlight class="typescript">
+getUsersWithObservable(): Observable&lt;User[]&gt; &#123;
+    return this.http.get(this.getUrl)
+		.map(this.extractData)
+		.catch(this.handleErrorObservable);
+&#125;
+</code></pre>
+
+    <p>In the above code snippet we are calling <code>http.get()</code> method which return <code>Observable&lt;Response&gt;</code>.
+    Using <code>RxJS map()</code> method we convert response data into JSON and finally we get <code>Observable&lt;User&gt;</code>              instance.</p>
+            
+<pre><code highlight class="typescript">
+getUsersWithPromise(): Promise&lt;User[]&gt; &#123;
+    return this.http.get(this.getUrl).toPromise()
+	    .then(this.extractData)
+	    .catch(this.handleErrorPromise);
+&#125;
+</code></pre>
+
+    <p>In the above code snippet we convert <code>Observable&lt;Response&gt;</code> into <code>Promise&lt;Response&gt;</code>              using <code>toPromise()</code> method of <b>RxJS</b>. Now, Inside <code>then()</code> we are calling another
+    method <code>extractData()</code> which converts the response data into JSON. <code>then()</code> method again
+    returns <code>Promise</code> and finally we get <code>Promise&lt;User&gt;</code>.
+
+<h4>Http.post() with Observable & Promise</h4>
+<pre><code highlight class="typescript">
+postUserWithObservable(user:User): Observable&lt;User&gt; &#123;
+    let headers = new Headers(&#123; 'Content-Type': 'application/json' &#125;);
+    let options = new RequestOptions(&#123; headers: headers &#125;);
+    return this.http.post(this.postUrl, user, options)
+        .map(this.extractData)
+        .catch(this.handleErrorObservable);
+&#125;
+
+postUserWithPromise(user:User): Promise&lt;User&gt; &#123;
+    let headers = new Headers(&#123; 'Content-Type': 'application/json' &#125;);
+    let options = new RequestOptions(&#123; headers: headers &#125;);
+    return this.http.post(this.postUrl, user, options).toPromise()
+	    .then(this.extractData)
+        .catch(this.handleErrorPromise);
+&#125;
+</code></pre>
+
+    <p>The above HTTP <b>post()</b> with return type <code>Observable&lt;User&gt; and Promise&lt;User&gt;</code>,
+    the data conversion takes place same as HTTP <code>get()</code>. But it accept additional parameter <b>body</b>,
+    which contains the data that we want to send to the server. In the header we are passing the <code>'Content-Type': 'application/json'</code>.</p>
+    <h4>Complete Example</h4>
+
+    <p>src/login.service.ts</p>
+<pre><code highlight class="typescript">
+import &#123; Injectable &#125; from '@angular/core';
+import &#123; Http, Response &#125; from '@angular/http';
+import &#123; Headers, RequestOptions &#125; from '@angular/http';
+import 'rxjs/Rx';
+import &#123; Observable &#125; from 'rxjs/Observable';
+
+import &#123; User &#125; from './user';
+
+@Injectable()
+export class LoginService &#123;
+    getUrl = "./user-data.json";
+    postUrl = "https://run.plnkr.co"
+    
+    constructor(private http:Http) &#123; &#125;
+    
+    getUsersWithObservable(): Observable&lt;User[]&gt; &#123;
+        return this.http.get(this.getUrl)
+		   .map(this.extractData)
+		   .catch(this.handleErrorObservable);
+    &#125;
+    
+    postUserWithObservable(user:User): Observable&lt;User&gt; &#123;
+	    let headers = new Headers(&#123; 'Content-Type': 'application/json' &#125;);
+      let options = new RequestOptions(&#123; headers: headers &#125;);
+        return this.http.post(this.postUrl, user, options)
+            .map(this.extractData)
+            .catch(this.handleErrorObservable);
+    &#125;
+    getUsersWithPromise(): Promise&lt;User[]&gt; &#123;
+        return this.http.get(this.getUrl).toPromise()
+		    .then(this.extractData)
+	        .catch(this.handleErrorPromise);
+    &#125;
+    postUserWithPromise(user:User): Promise&lt;User&gt; &#123;
+	let headers = new Headers(&#123; 'Content-Type': 'application/json' &#125;);
+        let options = new RequestOptions(&#123; headers: headers &#125;);
+        return this.http.post(this.postUrl, user, options).toPromise()
+	        .then(this.extractData)
+            .catch(this.handleErrorPromise);
+    &#125;		
+    
+    private extractData(res: Response) &#123;
+	    return res.json();
+    &#125;
+    private handleErrorObservable (error: Response | any) &#123;
+	    console.error(error.message || error);
+	    return Observable.throw(error.message || error);
+    &#125;
+    private handleErrorPromise (error: Response | any) &#123;
+	    console.error(error.message || error);
+	    return Promise.reject(error.message || error);
+    &#125;	
+&#125; 
+
+                </code></pre>
+              <p>src/user.ts</p>
+              <pre><code highlight class="typescript">
+export class User &#123;
+  email: string;
+  password: string;
+&#125;
+</code></pre>
+
+    <p>user-data.json</p>
+<pre><code highlight class="typescript">
+[
+  &#123;
+    "email": "abhishek@gmail.com",
+    "password": "dfj12sdf"
+  &#125;,
+  &#123;
+    "email": "prince@gmail.com",
+    "password": "erj12sdf"
+  &#125;,
+  &#123;
+    "email": "pra@gmail.com",
+    "password": "df34df34"
+  &#125;,
+  &#123;
+    "email": "alex@gmail.com",
+    "password": "fdfdf234"
+  &#125;
+]
+</code></pre>
+
+      <p>src/app.ts</p>
+<pre><code highlight class="typescript">
+//our root app component
+import &#123;Component, NgModule, VERSION, OnInit&#125; from '@angular/core'
+import &#123;BrowserModule&#125; from '@angular/platform-browser'
+import &#123; FormsModule &#125;   from '@angular/forms';
+import &#123; HttpModule &#125; from '@angular/http';
+import &#123; Observable &#125; from 'rxjs';
+
+import &#123; LoginService &#125; from './login.service';
+import &#123; User &#125; from './user';
+
+@Component(&#123;
+  selector: 'my-app',
+  templateUrl: `src/app.html`,
+&#125;)
+export class App &#123;
+  user: User = new User();
+  users_observable: User[] = [];
+  users_promise: User[] = [];
+  
+  errorMessage = "";
+  successMessage = "";
+  loginErrorMessage = "";
+  
+  constructor(private loginService: LoginService) &#123;
+
+  &#125;
+  
+  ngOnInit(): void &#123;
+    this.fetchUsersByObservable();
+    this.fetchUsersByPromise();
+   &#125;
+   
+  fetchUsersByObservable(): void &#123;
+    this.loginService.getUsersWithObservable()
+	    .subscribe( res =&gt; this.users_observable = res,
+        error =&gt; this.errorMessage = &lt;any&gt;error);    
+  &#125;
+   
+  fetchUsersByPromise(): void &#123;
+    this.loginService.getUsersWithPromise()
+        .then( res =&gt; this.users_promise = res,
+        error =&gt;  this.errorMessage = &lt;any&gt;error);   
+  &#125;
+   
+  submitFormByObservable(): void &#123;
+    this.loginService.postUserWithObservable(this.user)
+	    .subscribe( res =&gt; &#123;
+		if(res.status === 200)&#123;
+          this.successMessage = "Login Successfully"
+        &#125; else &#123;
+          this.loginErrorMessage = res.status;
+        &#125;					   
+			&#125;,
+      error =&gt; this.loginErrorMessage = &lt;any&gt;error);
+  &#125;
+  
+  submitFormByPromise(): void &#123;
+    this.loginService.postUserWithPromise(this.user)
+      .then( res =&gt; &#123;
+        if(res.status === 200)&#123;
+          this.successMessage = "Login Successfully"
+        &#125; else &#123;
+          this.loginErrorMessage = res.status;
+        &#125;
+      &#125;,
+      error =&gt; this.loginErrorMessage = &lt;any&gt;error);
+  &#125;
+&#125;
+
+@NgModule(&#123;
+  imports: [ BrowserModule, FormsModule, HttpModule ],
+  declarations: [ App ],
+  providers: [ LoginService ],
+  bootstrap: [ App ]
+&#125;)
+export class AppModule &#123;&#125;
+</code></pre>
+
+<pre><code highlight class="html">
+&lt;div class="w3-container"&gt;
+  &lt;div *ngIf="successMessage" class="success"&gt;&#123;&#123;successMessage&#125;&#125;&lt;/div&gt;
+  &lt;div *ngIf="loginErrorMessage" class="error"&gt;&#123;&#123;loginErrorMessage&#125;&#125;&lt;/div&gt;
+
+  &lt;form class="w3-container" name="loginForm" #loginForm="ngForm" method="POST" novalidate&gt;   
+    &lt;p&gt;
+      &lt;input class="w3-input" type="email" placeholder="Email ID" name="email" required minlength="4" maxlength="30" [(ngModel)]="user.email" #email="ngModel"&gt;
+    &lt;/p&gt;
+    &lt;div *ngIf="email.errors && (email.dirty || email.touched)" class="invalid-data"&gt;
+      &lt;div [hidden]="!email.errors.required"&gt;Email is required&lt;/div&gt;
+      &lt;div [hidden]="!email.errors.minlength"&gt;Email must be at least 4 characters long.&lt;/div&gt;
+      &lt;div [hidden]="!email.errors.maxlength"&gt;Email cannot be more than 30 characters long.&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;p&gt; 
+      &lt;input class="w3-input" type="password" placeholder="Password" name="password" required [(ngModel)]="user.passwword" #password="ngModel" pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]&#123;8,&#125;$"&gt;
+    &lt;/p&gt;
+    &lt;div *ngIf="password.errors && (password.dirty || password.touched)" class="invalid-data"&gt;
+      &lt;div [hidden]="!password.errors.required"&gt;Password is required&lt;/div&gt;
+      &lt;div [hidden]="!password.errors.pattern"&gt;Password must be minimum 8 character alphanumeric.&lt;/div&gt;
+    &lt;/div&gt;
+        
+    &lt;button type="submit" class="w3-button w3-round w3-teal" [disabled]="!loginForm.form.valid" (click)="submitFormByObservable()"&gt;Submit as Observable&lt;/button&gt;
+    &lt;button type="submit" class="w3-button w3-round w3-teal" [disabled]="!loginForm.form.valid" (click)="submitFormByPromise()"&gt;Submit as Promise&lt;/button&gt;
+  &lt;/form&gt;
+  
+  &lt;div class="header"&gt;Getting data using Obervable&lt;/div&gt;            
+  &lt;ul&gt;
+    &lt;li *ngFor="let user of users_observable"&gt;&#123;&#123;<span>user.email</span>&#125;&#125; - &#123;&#123;<span>user.password</span>&#125;&#125;&lt;/li&gt;
+  &lt;/ul&gt;
+    
+  &lt;div class="header"&gt;Getting data using Promise&lt;/div&gt;            
+  &lt;ul&gt;
+    &lt;li *ngFor="let user of users_promise"&gt;&#123;&#123;<span>user.email</span>&#125;&#125; - &#123;&#123;<span>user.password</span>&#125;&#125;&lt;/li&gt;
+  &lt;/ul&gt; 
+    
+&lt;/div&gt;
+</code></pre>
+              <p>See the working demo examples on <a href="https://embed.plnkr.co/WUiX4IFCGCrqPGhAAHnG/" target="_blank" title="Angular2 Http get() & post() using Observable and Promise">Plunker</a>.</p>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="reference">
+          <span>References: </span>
+          <span><a href="https://stackoverflow.com/questions/37364973/angular-promise-vs-observable" target="_blank" title="Angular Promise Vs Observable">Angular Promise Vs Observable</a></span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="related_post_header">Related Posts</div>
+        <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+      </div>
+    </div>
+  </div>
+</div>

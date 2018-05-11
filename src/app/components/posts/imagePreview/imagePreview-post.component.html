@@ -1,0 +1,110 @@
+<div class="row  page-content">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+      <h3 class="text-center">How To Show Uploaded Image Preview in Angular2</h3>
+      <hr>
+          <iframe src="https://embed.plnkr.co/RHdqzhJBWKYDj0Sb6eiT/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+          <p>Whenever user uploads any Image then it is a good idea to show the preview of the uploaded Image. So that the user
+            can know which Image they have uploaded and It also makes the website visually good. So, let's see how we can do
+            that...</p>
+          <hr>
+          <h4>HTML Markup to upload the image and display the uploaded Image</h4>
+  
+          <pre><code highlight class="html">        
+  &lt;div&gt;
+      Select file:
+      &lt;input type="file" (change)="changeListener($event)" accept="image/gif, image/jpeg, image/png"&gt;
+  &lt;/div&gt;
+  &lt;img [src]="url"&gt;
+                  </code></pre>
+  
+          <p>Here we have specified <code>&lt;input type="file" ..&gt;</code>, Which allow us to upload the file. Whenever there
+            is any change in <b>input</b> the <code>changeListener($event)</code> method will be fired. So, We are going to
+            handle the upload event inside <code>changeListener($event)</code> method.
+  
+            <pre><code highlight class="typescript">
+  changeListener($event): void &#123;
+      if (event.target.files && event.target.files[0]) &#123;
+        var reader = new FileReader();
+  
+        reader.onload = (event) => &#123;
+          this.url = event.target.result;
+        &#125;
+  
+        reader.readAsDataURL(event.target.files[0]);
+      &#125;
+  &#125;
+                  </code></pre>
+            <p>So, In the above code snippet the line <code>if (event.target.files && event.target.files[0])</code> is used for
+              checking <b>Whether the target of event is file or not and Whether it contains file of not</b>. Then we are using
+              <code>FileReader</code> class of javaScript to read the content of file.</p>
+            <p>Here I have used two methods of <code>FileReader</code> class i.e <code>onload() and readAsDataURL()</code>. </p>
+            <ul>
+              <li><b>FileReader.onload() :</b> A handler for the load event. This event is triggered each time the reading operation
+                is successfully completed.</li>
+              <li><b>FileReader.readAsDataURL() :</b> Starts reading the contents of the specified Blob, once finished, the result
+                attribute contains a data: URL representing the file's data.</li>
+            </ul>
+            <p>So Inside <code>FileReader.onload()</code> method we are basically assigning the <b>URL</b> of target event file
+              and then using <code>readAsDataURL()</code> we are reading the content of target file. See the Compete example
+              below.</p>
+  
+            <h4>Compete Example</h4>
+  
+            <pre><code highlight class="typescript">
+  import &#123;Component, NgModule, VERSION&#125; from '@angular/core'
+  import &#123;BrowserModule&#125; from '@angular/platform-browser'
+  
+  @Component(&#123;
+    selector: 'my-app',
+    template: `
+      &lt;div&gt;
+        Select file:
+        &lt;input type="file" (change)="changeListener($event)" accept="image/gif, image/jpeg, image/png"&gt;
+      &lt;/div&gt;
+      &lt;img [src]="url"&gt;
+    `,
+  &#125;)
+  export class App &#123;
+    url="";
+    constructor() &#123;
+    &#125;
+    
+    changeListener($event): void &#123;
+      if (event.target.files && event.target.files[0]) &#123;
+        var reader = new FileReader();
+  
+        reader.onload = (event) => &#123;
+          this.url = event.target.result;
+        &#125;
+  
+        reader.readAsDataURL(event.target.files[0]);
+      &#125;
+    &#125;
+  &#125;
+  
+  @NgModule(&#123;
+    imports: [ BrowserModule ],
+    declarations: [ App ],
+    bootstrap: [ App ]
+  &#125;)
+  export class AppModule &#123;&#125;
+                  </code></pre>
+            <p>See the working demo on <a href="https://embed.plnkr.co/RHdqzhJBWKYDj0Sb6eiT/" target="_blank" title="Uploaded Image Preview Angular2">Plunker</a>.</p>
+  
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="reference">
+                        <span>References: </span>
+                        <span><a href="https://developer.mozilla.org/en/docs/Web/API/FileReader" target="_blank" title="Javascript FileReader">Javascript FileReader</a></span>
+                    </div>
+                </div>
+            </div>
+                     
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="related_post_header">Related Posts</div>
+                    <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                </div>
+            </div>
+    </div>
+</div>

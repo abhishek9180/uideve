@@ -1,0 +1,206 @@
+<div class="row  page-content">
+  <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+      <h3 class="text-center">Search and Highlight the searched result in Angular2</h3>
+      <hr>
+          <iframe src="https://embed.plnkr.co/6IU94F/?show=preview&deferRun" frameborder="0" width="100%" height="480px"></iframe>
+          <p>In today's world all the web applications provides the search functionalities. So, that the user can search for the
+            required data without going through all unnecessary datas. So, here I'll tell you about How we can implement the
+            <b>search functionality</b> to our web page in <b>Angular</b> way.</p>
+          <hr>
+          <p>First, create an interface which would define the data type (employees in our case). You can skip this step by declaring
+            the <code>employees</code> variable to <code>any</code> data type inside <code>src/app.ts</code> but it is good
+            practice to define it inside an interface.</p>
+            
+<h4>src/employee.ts</h4>
+<pre><code highlight class="typescript">
+export interface Employee &#123;
+  id: string;
+  name: string;
+  company: string;
+  designation: string;
+&#125;
+</code></pre>
+
+          <p>Create a file <code>src/app.ts</code>and import <code>Employee</code> interface, <code>MyFilterPipe, HighlightPipe</code> inside it. MyFilterPipe and HighlightPipe are Angular <b>Custom pipes</b> which would search and highlight the
+            result. We will define it later. Now, create and initialize the <code>employees</code> data member so that we can
+            iterate those data and show them to the user. After that create a variable which would hold the search text that
+            we type in the textbox (in our case it is <b>filterQuery</b>) and initialize it as empty so that no Filtering takes
+            place when the application loads. See the below code snippet</p>
+
+          <h4>src/app.ts</h4>
+<pre><code highlight class="typescript">
+  import &#123; Component &#125; from '@angular/core'
+  
+  import &#123; Employee &#125; from './src/employee'
+  import &#123; MyFilterPipe &#125; from './filter-data.directive'
+  import &#123; HighlightPipe &#125; from './highlight.directive'
+  
+  @Component(&#123;
+    selector: 'my-app',
+    templateUrl: `./src/app.html`,
+  &#125;)
+  export class App &#123;
+    employeeData: Employee = [
+      &#123;
+        id: "1234",
+        name: "Abhishek Jha",
+        company: "Persisten Sys"
+        designation: "UI Developer"
+      &#125;,
+      &#123;
+        id: "1235",
+        name: "Prashant kumar",
+        company: "IBM"
+        designation: "UI Developer"
+      &#125;,
+      &#123;
+        id: "2234",
+        name: "Sonu Kumar",
+        company: "Google"
+        designation: "Software Developer"
+      &#125;,
+      &#123;
+        id: "1264",
+        name: "Abhishek Verma",
+        company: "Microsoft"
+        designation: ".Net Developer"
+      &#125;,
+      &#123;
+        id: "1634",
+        name: "Abinash",
+        company: "Google"
+        designation: "Software Developer"
+      &#125;,
+      &#123;
+        id: "1834",
+        name: "Sourav Kumar",
+        company: "Microsoft"
+        designation: ".Net Developer"
+      &#125;,
+      &#123;
+        id: "1234",
+        name: "Akhil",
+        company: "IBM"
+        designation: "Market Analyst"
+      &#125;
+    ];
+  
+    filterQuery: string = "";
+    constructor() &#123;
+    &#125;
+  &#125;
+                  </code></pre>
+  
+          <p>Now I'll define the <code>MyFilterPipe and HighlightPipe</code>. The First Pipe will filter the data and show only
+            those row which contains the search text. Have a look on the implementation of first pipe.</p>
+          <h4>src/filter-data.directive.ts</h4>
+          <pre><code highlight class="typescript">
+  import &#123; Pipe, PipeTransform &#125; from '@angular/core';
+  
+  @Pipe(&#123;
+      name: 'myfilter',
+      pure: false
+  &#125;)
+  export class MyFilterPipe implements PipeTransform &#123;
+      transform(employees: any[], filterQuery: Object): any &#123;
+        console.log(JSON.stringify(employees));
+          if (!employees || !filterQuery) &#123;
+              return employees;
+          &#125;
+          // filter items array, items which match and return true will be kept, false will be filtered out
+          return employees.filter(employee => employee.id.indexOf(filterQuery)> -1 ||
+                                  employee.company.toLowerCase().indexOf(filterQuery.toLowerCase()) > -1 || 
+                                  employee.name.toLowerCase().indexOf(filterQuery.toLowerCase()) > -1 || 
+                                  employee.designation.toLowerCase().indexOf(filterQuery.toLowerCase()) > -1);
+      &#125;
+  &#125;
+                  </code></pre>
+          <p>So, the above pipe first checks <code>employees and filterQuery</code> for empty value, If it's empty then return
+            the array without filtering else iterate the entire <b>array of JSON</b> Object and returns <code>true</code> if
+            the <b>filterQuery</b> matches with any property of <code>employees</code> object otherwise returns false. After
+            the iteration is done it returns the filtered result.</p>
+          <p>Now, For <b>highlighting</b> the filtered data, I'll create another <b>Pipe</b>. Have a look at the implementation
+            below</p>
+          <h4>src/highlight.directive.ts</h4>
+          <pre><code highlight class="typescript">
+  import &#123;PipeTransform, Pipe&#125; from '@angular/core';
+  
+  @Pipe(&#123; name: 'highlight' &#125;)
+  export class HighlightPipe implements PipeTransform &#123;
+    transform(text: string, search): string &#123;
+      var pattern = search.replace(/[\-\[\]\/\&#123;\&#125;\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      pattern = pattern.split(' ').filter((t) => &#123;
+        return t.length > 0;
+      &#125;).join('|');
+      var regex = new RegExp(pattern, 'gi');
+  
+      return search ? text.replace(regex, (match) => `&lt;span class="highlight"&gt;$&#123;match&#125;&lt;/span&gt;`) : text;
+    &#125;
+  &#125;
+                  </code></pre>
+          <p>So, the above <code>HighlightPipe</code> would simply replace the filtered text with <code>&lt;span class="highlight"&gt;Search Text Here..&lt;span&gt;</code>.
+            As you can see, it simply adds the highlight class to the text. Now, we can define the css property for <code>highlight</code>          class as</p>
+          <pre><code highlight class="css">
+  .highlight &#123;
+      background-color: yellow;
+  &#125;
+                  </code></pre>
+          <p>Now, create the HTML file <code>src/app.html</code> and iterate over the <code>employees</code> data and apply the
+            <code>myfilter</code> Filter to it. Apply the <code>highlight</code> Filter to each <code>&lt;td&gt;</code> and
+            create a textbox where user can type the text to search. There should be two-way data-binding for the search textbox.
+            Have a look at the implementation below.</p>
+          <h4>src/app.html</h4>
+          <pre><code highlight class="html">
+  &lt;div class="container" style="margin-top: 50px;"&gt;
+   &lt;div class="form-group"&gt;
+        &lt;input type="text" class="form-control" placeholder="Enter Search text" [(ngModel)]="filterQuery"&gt;
+  &lt;/div&gt;
+  
+  &lt;div class="row"&gt;
+    &lt;table class="table table-striped"&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;ID&lt;/th&gt;
+          &lt;th&gt;Name&lt;/th&gt;
+          &lt;th&gt;Company&lt;/th&gt;
+          &lt;th&gt;Designation&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr *ngFor="let employee of employeeData  | myfilter : filterQuery"&gt;
+          &lt;td [innerHTML]="employee.id | highlight: filterQuery"&gt;&lt;/td&gt;
+          &lt;td [innerHTML]="employee.name | highlight: filterQuery"&gt;&lt;/td&gt;
+          &lt;td [innerHTML]="employee.company | highlight: filterQuery"&gt;&lt;/td&gt;
+          &lt;td [innerHTML]="employee.designation | highlight: filterQuery"&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/div&gt;
+    
+  &lt;/div&gt;
+                  </code></pre>
+          <p>Now, the last step is add all the <code>Components and Pipes</code> declaration inside <code>@NgModule</code> of
+            <code>src/app.ts</code> file.
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+              <p>import the <code>FormsModule</code> to the <code>src/app.ts</code> file as well, because for two-way data-binding
+                this module is required. Else you'll get error message <code class="danger">Can't bind to 'ngModel' since it isn't a known property of 'input'</code></p>
+            </div>
+  
+            <p>See the working demo of Both examples on <a href="https://embed.plnkr.co/6IU94F/" target="_blank" title="Angular2 Filter and text Highlighter">Plunker</a>.</p>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="reference">
+                        <span>References: </span>
+                        <span><a href="https://gist.github.com/adamrecsko/0f28f474eca63e0279455476cc11eca7" target="_blank" rel="nofollow" title="Form validation">Text Highlighter</a></span>
+                    </div>
+                </div>
+            </div>
+                     
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="related_post_header">Related Posts</div>
+                    <related-post [showRelatedPostImage]="showRelatedPostImage" [relatedPostMatchPercentage]="relatedPostMatchPercentage" [relatedPostCount]="relatedPostCount"></related-post>           
+                </div>
+            </div>
+  </div>
+</div>
