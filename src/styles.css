@@ -283,3 +283,8 @@ h3, h4 {
 .btn-not-started {
     background-color: #999999;
 }
+
+iframe {
+    border: 1px solid #aaa;
+    box-shadow: 3px 3px 3px 0px #aaaaaa;
+}

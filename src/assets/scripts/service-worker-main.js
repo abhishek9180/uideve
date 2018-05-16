@@ -138,7 +138,6 @@ function initializeUI() {
 
     //updateBtn();
   });
-}
 
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   console.log('Service Worker and Push is supported');
